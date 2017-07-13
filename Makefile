@@ -1,13 +1,21 @@
 BEATNAME=gabeat
-BEAT_DIR=GABeat
+#BEAT_DIR=github.com/GeneralElectric/GABeat
+BEAT_DIR=github.com/affinity226/GABeat
 SYSTEM_TESTS=false
 TEST_ENVIRONMENT=false
 ES_BEATS?=./vendor/github.com/elastic/beats
 GOPACKAGES=$(shell glide novendor)
+#GOPACKAGES=$(shell go list ${BEAT_DIR}/... | grep -v /vendor/)
 PREFIX?=.
 
 # Path to the libbeat Makefile
 -include $(ES_BEATS)/libbeat/scripts/Makefile
+
+.PHONY: init
+init:
+	glide update  --no-recursive
+	make update
+	git init
 
 # Initial beat setup
 .PHONY: setup

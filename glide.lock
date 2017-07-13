@@ -1,5 +1,5 @@
-hash: 8022e2b09adbbe41e4e6208769fc4d14bf129e019533d5ec6afd7c33250d09d1
-updated: 2017-07-12T16:31:08.445043347+09:00
+hash: 63dede332facf332eb2ac64077477c20ee04318bf035900f4577e03cd4577013
+updated: 2017-07-13T18:00:34.744594055+09:00
 imports:
 - name: cloud.google.com/go
   version: 3e1507a0d90d17e4fdd8ef75e8f037ebecc854ba
@@ -18,7 +18,7 @@ imports:
 - name: github.com/eapache/queue
   version: ded5959c0d4e360646dc9e9908cff48666781367
 - name: github.com/elastic/beats
-  version: d33fc2b0298bbf38f031c408c06dfcf567ea3851
+  version: e669c2080d02af8dce9e9ae5918c320fef6b8540
   subpackages:
   - libbeat/beat
   - libbeat/cfgfile

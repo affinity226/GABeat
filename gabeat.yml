@@ -8,7 +8,7 @@ gabeat:
     # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
     # Documentation explaining OAuth2 Service Account flow and how code works
     # https://developers.google.com/accounts/docs/OAuth2ServiceAccount
-    google_credentials_file: /Users/1100473/src/github.com/GeneralElectric/GABeat/test3.json
+    google_credentials_file: /Users/1100473/src/github.com/affinity226/GABeat/test3.json
     # replace ga_ids with your metric ID from GA
     ga_ids: "ga:141191979"
     # Docs on available metrics and dimensions can be found here:
@@ -27,7 +27,7 @@ gabeat:
     # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
     # Documentation explaining OAuth2 Service Account flow and how code works
     # https://developers.google.com/accounts/docs/OAuth2ServiceAccount
-    google_credentials_file: /Users/1100473/src/github.com/GeneralElectric/GABeat/test3.json
+    google_credentials_file: /Users/1100473/src/github.com/affinity226/GABeat/test3.json
     # replace ga_ids with your metric ID from GA
     ga_ids: "ga:141191979"
     # Docs on available metrics and dimensions can be found here:

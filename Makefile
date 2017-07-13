@@ -4,8 +4,8 @@ BEAT_DIR=github.com/affinity226/GABeat
 SYSTEM_TESTS=false
 TEST_ENVIRONMENT=false
 ES_BEATS?=./vendor/github.com/elastic/beats
-GOPACKAGES=$(shell glide novendor)
-#GOPACKAGES=$(shell go list ${BEAT_DIR}/... | grep -v /vendor/)
+#GOPACKAGES=$(shell glide novendor)
+GOPACKAGES=$(shell go list ${BEAT_DIR}/... | grep -v /vendor/)
 PREFIX?=.
 
 # Path to the libbeat Makefile
@@ -13,7 +13,8 @@ PREFIX?=.
 
 .PHONY: init
 init:
-	glide update  --no-recursive
+	#glide update  --no-recursive
+	glide update
 	make update
 	git init
 
@@ -25,9 +26,9 @@ setup: copy-vendor
 # Copy beats into vendor directory
 .PHONY: copy-vendor
 copy-vendor:
-	mkdir -p vendor/github.com/elastic/
-	cp -R ${GOPATH}/src/github.com/elastic/beats vendor/github.com/elastic/
-	rm -rf vendor/github.com/elastic/beats/.git
+	#mkdir -p vendor/github.com/elastic/
+	#cp -R ${GOPATH}/src/github.com/elastic/beats vendor/github.com/elastic/
+	#rm -rf vendor/github.com/elastic/beats/.git
 
 .PHONY: git-init
 git-init:
@@ -47,6 +48,10 @@ git-init:
 # This is called by the beats packer before building starts
 .PHONY: before-build
 before-build:
+.PHONY: update-deps
+update-deps:
+	#glide update  --no-recursive
+	glide update  --no-recursive
 
 # Collects all dependencies and then calls update
 .PHONY: collect

@@ -2,18 +2,41 @@ gabeat:
   # Defines how often an event is sent to the output
   period: 5s
 
-gabeat.googleanalytics:
+  googleanalytics:
+   - 
     # Documentation for the Google Analytics Realtime API:
     # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
     # Documentation explaining OAuth2 Service Account flow and how code works
     # https://developers.google.com/accounts/docs/OAuth2ServiceAccount
-    google_credentials_file: /path/to/your/jwt/token/file
+    google_credentials_file: /Users/1100473/src/github.com/GeneralElectric/GABeat/test3.json
     # replace ga_ids with your metric ID from GA
-    ga_ids: "ga:123456789"
+    ga_ids: "ga:141191979"
+    # Docs on available metrics and dimensions can be found here:
+    # https://developers.google.com/analytics/devguides/reporting/realtime/dimsmets/
+    ga_metrics: "ga:users,ga:newUsers"
+    #ga_metrics: "ga:newUsers"
+    ga_dimensions: "ga:date,ga:userType"
+    #ga_dimensions: "ga:date"
+    #realtime or gaservice
+    ga_servicetype: "gaservice"
+    #start,endtime will be used only gaservice type
+    ga_starttime: "2017-07-10"
+    ga_endtime: "yesterday"
+   - 
+    # Documentation for the Google Analytics Realtime API:
+    # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
+    # Documentation explaining OAuth2 Service Account flow and how code works
+    # https://developers.google.com/accounts/docs/OAuth2ServiceAccount
+    google_credentials_file: /Users/1100473/src/github.com/GeneralElectric/GABeat/test3.json
+    # replace ga_ids with your metric ID from GA
+    ga_ids: "ga:141191979"
     # Docs on available metrics and dimensions can be found here:
     # https://developers.google.com/analytics/devguides/reporting/realtime/dimsmets/
     ga_metrics: "rt:pageviews"
     ga_dimensions: "rt:pageTitle"
+    #realtime or gaservice
+    ga_servicetype: "realtime"
+    
 
 #================================ General =====================================
 
@@ -23,12 +46,12 @@ gabeat.googleanalytics:
 
 # The tags of the shipper are included in their own field with each
 # transaction published.
-#tags: ["service-X", "web-tier"]
+tags: ["service-X", "web-tier"]
 
 # Optional fields that you can specify to add additional information to the
 # output.
-#fields:
-#  env: staging
+fields:
+  env: prod
 
 #================================ Outputs =====================================
 
@@ -36,9 +59,11 @@ gabeat.googleanalytics:
 # Multiple outputs may be used.
 
 #-------------------------- Elasticsearch output ------------------------------
-output.elasticsearch:
+output.console:
+   pretty: true
+#output.elasticsearch:
   # Array of hosts to connect to.
-  hosts: ["localhost:9200"]
+  #hosts: ["localhost:9200"]
 
   # Optional protocol and basic auth credentials.
   #protocol: "https"
@@ -64,9 +89,9 @@ output.elasticsearch:
 
 # Sets log level. The default log level is info.
 # Available log levels are: critical, error, warning, info, debug
-#logging.level: debug
+logging.level: debug
 
 # At debug level, you can selectively enable logging only for some components.
 # To enable all selectors use ["*"]. Examples of other selectors are "beat",
 # "publish", "service".
-#logging.selectors: ["*"]
+logging.selectors: ["*"]

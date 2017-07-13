@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Period          time.Duration `config:"period"`
-	Googleanalytics GoogleAnalyticsConfig
+	Googleanalytics []GoogleAnalyticsConfig
 }
 
 var DefaultConfig = Config{
@@ -22,9 +22,21 @@ type GoogleAnalyticsConfig struct {
 	GoogleAnalyticsIDs        string `config:"ga_ids"`
 	GoogleAnalyticsMetrics    string `config:"ga_metrics"`
 	GoogleAnalyticsDimensions string `config:"ga_dimensions"`
+	GoogleAnalyticsStarttime  string `config:"ga_starttime"`
+	GoogleAnalyticsEndtime    string `config:"ga_endtime"`
+	GoogleAnalyticsType       string `config:"ga_servicetype"`
 }
 
 func (gaConfig GoogleAnalyticsConfig) String() string {
+	/*fmt.Printf("GoogleCredentialsFilePath: %s, GoogleAnalyticsIDs: %s, GoogleAnalyticsMetrics: %s, GoogleAnalyticsDimensions %s Start: %s, End: %s, Type: %s\n",
+	gaConfig.GoogleCredentialsFilePath,
+	gaConfig.GoogleAnalyticsIDs,
+	gaConfig.GoogleAnalyticsMetrics,
+	gaConfig.GoogleAnalyticsDimensions,
+	gaConfig.GoogleAnalyticsStarttime,
+	gaConfig.GoogleAnalyticsEndtime,
+	gaConfig.GoogleAnalyticsType)
+	-Charge- */
 	return fmt.Sprintf("GoogleCredentialsFilePath: %s, GoogleAnalyticsIDs: %s, GoogleAnalyticsMetrics: %s, GoogleAnalyticsDimensions %s",
 		gaConfig.GoogleCredentialsFilePath,
 		gaConfig.GoogleAnalyticsIDs,

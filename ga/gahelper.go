@@ -13,9 +13,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
-	"regexp"
 )
 
 var errorResult = GABeatDataPoint{-1, "error", "error"}
@@ -24,8 +24,8 @@ var emptyResult = GABeatDataPoint{0, "empty", "empty"}
 var emptyResults = []GABeatDataPoint{emptyResult}
 var alphanumericPlusUnderscoreRegex, _ = regexp.Compile("[_0-9A-Za-z]")
 var whitespaceRegex, _ = regexp.Compile("[[:space:]]")
-const logSelector = "gahelper"
 
+const logSelector = "gahelper"
 
 type GABeatDataPoint struct {
 	Value         int
@@ -61,17 +61,30 @@ func getGAReportData(gaConfig config.GoogleAnalyticsConfig, gaDataRetrieverFunc 
 		return errorResults, dimensionErr
 	}
 
-	gaData, gaDataErr := gaDataRetrieverFunc(gaConfig.GoogleAnalyticsIDs,
-		gaConfig.GoogleAnalyticsMetrics,
-		gaConfig.GoogleAnalyticsDimensions)
+	if gaConfig.GoogleAnalyticsType == "gaservice" {
+		gaData, gaDataErr := getGADataForCharge(gaConfig.GoogleAnalyticsIDs,
+			gaConfig.GoogleAnalyticsMetrics,
+			gaConfig.GoogleAnalyticsDimensions,
+			gaConfig.GoogleAnalyticsStarttime,
+			gaConfig.GoogleAnalyticsEndtime,
+		)
+		if gaDataErr != nil {
+			return errorResults, fmt.Errorf("Could not get Google Analytics data: %v", gaDataErr)
+		}
+		diLen := len(strings.Split(gaConfig.GoogleAnalyticsDimensions, ","))
+		meLen := len(strings.Split(gaConfig.GoogleAnalyticsMetrics, ","))
+		return parseGAResponseForCharge(gaData, diLen, meLen)
+	} else {
+		gaData, gaDataErr := gaDataRetrieverFunc(gaConfig.GoogleAnalyticsIDs,
+			gaConfig.GoogleAnalyticsMetrics,
+			gaConfig.GoogleAnalyticsDimensions)
+		if gaDataErr != nil {
+			return errorResults, fmt.Errorf("Could not get Google Analytics data: %v", gaDataErr)
+		}
+		gaDataPoints, parseErr := parseGAResponse(gaData)
 
-	if gaDataErr != nil {
-		return errorResults, fmt.Errorf("Could not get Google Analytics data: %v", gaDataErr)
+		return gaDataPoints, parseErr
 	}
-
-	gaDataPoints, parseErr := parseGAResponse(gaData)
-
-	return gaDataPoints, parseErr
 }
 
 func initCredentialsPath(gaConfig config.GoogleAnalyticsConfig) (GAData []GABeatDataPoint, err error) {
@@ -120,18 +133,18 @@ func getGAData(gaIds string, gaMetrics string, gaDimensions string) (gaData *ana
 
 func parseGAResponse(gaData *analytics.RealtimeData) (GAData []GABeatDataPoint, err error) {
 	debugGAResponse(gaData)
-	if(len(gaData.Rows) < 1 || len(gaData.Rows[0]) < 1){
+	if len(gaData.Rows) < 1 || len(gaData.Rows[0]) < 1 {
 		return emptyResults, nil
 	}
 	gaDataPoints := []GABeatDataPoint{}
-  metricNameHeader := getMetric(gaData)
+	metricNameHeader := getMetric(gaData)
 
 	for _, row := range gaData.Rows {
 		//ASSUMPTION: last element in row is the numerical value and all
 		//preceding values are dimension names.
-		var dimensionNames []string = row[0:len(row) - 1]
+		var dimensionNames []string = row[0 : len(row)-1]
 		dimensionName := strings.Join(dimensionNames, "_")
-		var metricValue string = row[len(row) - 1]
+		var metricValue string = row[len(row)-1]
 		dataPoint, err := strconv.Atoi(metricValue)
 		if err != nil {
 			return errorResults, fmt.Errorf("Error converting string to int: %s, %v", metricValue, err)
@@ -150,25 +163,27 @@ func parseGAResponse(gaData *analytics.RealtimeData) (GAData []GABeatDataPoint, 
 //https://www.elastic.co/guide/en/beats/libbeat/current/event-conventions.html
 func format(toSanitize string) (sanitized string) {
 	//replace whitespaces with _
-	var noSpaces = whitespaceRegex.ReplaceAllString(toSanitize, "_")
+	var noSpaces = whitespaceRegex.ReplaceAllString(toSanitize, "")
 	//replace : with _
-	var noColons = strings.Replace(noSpaces, ":", "_", -1)
+	var noColons = strings.Replace(noSpaces, "ga:", "", -1)
+	noColons = strings.Replace(noColons, "rt:", "", -1)
 	//strip all other non-alphanumeric except _
 	var alphaNumUnderscore = alphanumericPlusUnderscoreRegex.FindAllString(noColons, -1)
-	return strings.ToLower(strings.Join(alphaNumUnderscore, ""))
+	//return strings.ToLower(strings.Join(alphaNumUnderscore, ""))
+	return strings.Join(alphaNumUnderscore, "")
 }
 
 //ASSUMPTION: Last element in header array is the metric name and all
 //preceding elements are dimension names
-func getMetric(gaData *analytics.RealtimeData) (metricName string){
+func getMetric(gaData *analytics.RealtimeData) (metricName string) {
 	lastHeaderIndex := len(gaData.ColumnHeaders) - 1
 	lastHeader := gaData.ColumnHeaders[lastHeaderIndex]
 	logp.Debug(logSelector, "metricName: %s", lastHeader.Name)
 	return lastHeader.Name
 }
 
-func debugGAResponse(gaData *analytics.RealtimeData){
-	if (logp.IsDebug(logSelector)){
+func debugGAResponse(gaData *analytics.RealtimeData) {
+	if logp.IsDebug(logSelector) {
 		for i, columnHeader := range gaData.ColumnHeaders {
 			logp.Debug(logSelector, "column header [%d]: %s %s %s ", i,
 				columnHeader.ColumnType, columnHeader.DataType, columnHeader.Name)
@@ -179,4 +194,64 @@ func debugGAResponse(gaData *analytics.RealtimeData){
 			}
 		}
 	}
+}
+
+func debugGAResponseForCharge(gaData *analytics.GaData) {
+	if logp.IsDebug(logSelector) {
+		for i, columnHeader := range gaData.ColumnHeaders {
+			logp.Debug(logSelector, "column header [%d]: %s %s %s ", i,
+				columnHeader.ColumnType, columnHeader.DataType, columnHeader.Name)
+		}
+		for j, row := range gaData.Rows {
+			for k, rowElement := range row {
+				logp.Debug(logSelector, "data[%d][%d]", j, k, rowElement)
+			}
+		}
+	}
+}
+
+func getGADataForCharge(gaIds, gaMetrics, gaDimensions, gaStarttime, gaEndtime string) (gaData *analytics.GaData, err error) {
+	oauthHttpClient, err := google.DefaultClient(oauth2.NoContext, analytics.AnalyticsReadonlyScope)
+	if err != nil {
+		return nil, fmt.Errorf("Error creating auth context: %v", err)
+	}
+	analyticsService, err := analytics.New(oauthHttpClient)
+
+	if err != nil {
+		return nil, fmt.Errorf("Error creating Google Analytics client: %v", err)
+	}
+
+	dataGAService := analytics.NewDataGaService(analyticsService)
+
+	dataGAGetCall := dataGAService.Get(gaIds, gaStarttime, gaEndtime, gaMetrics)
+
+	gaData, gaDataErr := dataGAGetCall.Dimensions(gaDimensions).Do()
+
+	return gaData, gaDataErr
+}
+
+func parseGAResponseForCharge(gaData *analytics.GaData, dimensionCount, metricCount int) (GAData []GABeatDataPoint, err error) {
+	debugGAResponseForCharge(gaData)
+	if len(gaData.Rows) < 1 || len(gaData.Rows[0]) < 1 {
+		return emptyResults, nil
+	}
+	gaDataPoints := []GABeatDataPoint{}
+
+	for _, row := range gaData.Rows {
+		var dimensionNames []string = row[0:dimensionCount]
+		dimensionName := strings.Join(dimensionNames, "_")
+		for idx := 0; idx < metricCount; idx++ {
+			var metricValue string = row[dimensionCount+idx]
+			var metricNameHeader string = gaData.ColumnHeaders[dimensionCount+idx].Name
+			dataPoint, err := strconv.Atoi(metricValue)
+			if err != nil {
+				return errorResults, fmt.Errorf("Error converting string to int: %s, %v", metricValue, err)
+			}
+			gaDataPoint := GABeatDataPoint{dataPoint,
+				format(dimensionName),
+				format(metricNameHeader)}
+			gaDataPoints = append(gaDataPoints, gaDataPoint)
+		}
+	}
+	return gaDataPoints, nil
 }

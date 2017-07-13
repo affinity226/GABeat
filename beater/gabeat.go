@@ -52,7 +52,10 @@ func runFunctionally(bt *Gabeat, b *beat.Beat, dataFunc gaDataRetriever) error {
 			return nil
 		case <-ticker.C:
 		} //end select
-		beatOnce(bt.client, b.Name, bt.config.Googleanalytics, dataFunc)
+		for _, gaConfig := range bt.config.Googleanalytics {
+			//beatOnce(bt.client, b.Name, bt.config.Googleanalytics[0], dataFunc)
+			beatOnce(bt.client, b.Name, gaConfig, dataFunc) //Charge
+		}
 	} //end for
 } //end func
 
@@ -70,7 +73,20 @@ func makeEvent(beatType string, GAData []ga.GABeatDataPoint) map[string]interfac
 	event := common.MapStr{
 		"@timestamp": common.Time(time.Now()),
 		"type":       beatType,
-		"count":      1,  //The number of transactions that this event represents
+		"count":      1, //The number of transactions that this event represents
+	}
+	for _, gaDataPoint := range GAData {
+		gaDataName := gaDataPoint.DimensionName + "_" + gaDataPoint.MetricName
+		event.Put(gaDataName, gaDataPoint.Value)
+	}
+	return event
+}
+func makeEventForCharge(beatType string, GAData []ga.GABeatDataPoint) map[string]interface{} {
+	event := common.MapStr{
+		"@timestamp": common.Time(time.Now()),
+		"type":       beatType,
+		"count":      1, //The number of transactions that this event represents
+		//"data":       GAData,
 	}
 	for _, gaDataPoint := range GAData {
 		gaDataName := gaDataPoint.DimensionName + "_" + gaDataPoint.MetricName
@@ -80,7 +96,8 @@ func makeEvent(beatType string, GAData []ga.GABeatDataPoint) map[string]interfac
 }
 
 func publishToElastic(client publisher.Client, beatType string, GAData []ga.GABeatDataPoint) {
-	event := makeEvent(beatType, GAData)
+	//event := makeEvent(beatType, GAData)
+	event := makeEventForCharge(beatType, GAData)
 	succeeded := client.PublishEvent(event)
 	if !succeeded {
 		logp.Err("Publisher couldn't publish event to Elastic")

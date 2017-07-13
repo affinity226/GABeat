@@ -3,8 +3,8 @@ package ga
 // This file is mandatory as otherwise the gabeat.test binary is not generated correctly.
 
 import (
-	cfg "github.com/GeneralElectric/GABeat/config"
 	"errors"
+	cfg "github.com/affinity226/GABeat/config"
 	"github.com/stretchr/testify/assert"
 	analytics "google.golang.org/api/analytics/v3"
 	googleapi "google.golang.org/api/googleapi"
@@ -13,6 +13,7 @@ import (
 )
 
 var gaTestConfig cfg.GoogleAnalyticsConfig = cfg.GoogleAnalyticsConfig{"/", "ids", "metric", "dimension"}
+
 const metricNameFormatted = "rt_pageviews"
 const metricName = "rt:pageViews"
 const dimensionNameFormatted = "pagename"
@@ -62,17 +63,17 @@ func TestParseGAMulitRowResponse(t *testing.T) {
 	testDimension("actions_open", gaDataPoints, 2, t)
 }
 
-func testDataPoint(expected int, dataPoints []GABeatDataPoint, index int, t *testing.T){
+func testDataPoint(expected int, dataPoints []GABeatDataPoint, index int, t *testing.T) {
 	assert.EqualValues(t, expected, dataPoints[index].Value,
 		"data point should be %d but was: %d", expected, dataPoints[index].Value)
 }
 
-func testMetric(expected string, dataPoints []GABeatDataPoint, index int, t *testing.T){
+func testMetric(expected string, dataPoints []GABeatDataPoint, index int, t *testing.T) {
 	assert.EqualValues(t, expected, dataPoints[index].MetricName,
 		"metric should be %s but was: %s", expected, dataPoints[index].MetricName)
 }
 
-func testDimension(expected string, dataPoints []GABeatDataPoint, index int, t *testing.T){
+func testDimension(expected string, dataPoints []GABeatDataPoint, index int, t *testing.T) {
 	assert.EqualValues(t, expected, dataPoints[index].DimensionName,
 		"dimension should be %s but was: %s", expected, dataPoints[index].DimensionName)
 }
@@ -147,10 +148,10 @@ func createDimensionColumnHeader(name string) *analytics.RealtimeDataColumnHeade
 func createColumnHeader(name string, columnType string, dataType string) *analytics.RealtimeDataColumnHeaders {
 	return &analytics.RealtimeDataColumnHeaders{
 		columnType, //ColumnType string `json:"columnType,omitempty"`
-		dataType, //DataType string `json:"dataType,omitempty"`
-		name, //Name string `json:"name,omitempty"`
-		nil, //ForceSendFields []string `json:"-"`
-		nil, //NullFields []string `json:"-"`
+		dataType,   //DataType string `json:"dataType,omitempty"`
+		name,       //Name string `json:"name,omitempty"`
+		nil,        //ForceSendFields []string `json:"-"`
+		nil,        //NullFields []string `json:"-"`
 	}
 }
 

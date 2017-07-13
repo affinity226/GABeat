@@ -5,7 +5,7 @@ import (
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/analytics/v3"
 
-	"github.com/GeneralElectric/GABeat/config"
+	"github.com/affinity226/GABeat/config"
 
 	// optional, this is just a logger
 	"github.com/elastic/beats/libbeat/logp"

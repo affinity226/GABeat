@@ -6,7 +6,7 @@ import (
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/logp"
 
-	"github.com/GeneralElectric/GABeat/beater"
+	"github.com/affinity226/GABeat/beater"
 )
 
 func main() {

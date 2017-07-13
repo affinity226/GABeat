@@ -3,7 +3,7 @@ BEATNAME=gabeat
 BEAT_DIR=github.com/affinity226/GABeat
 SYSTEM_TESTS=false
 TEST_ENVIRONMENT=false
-ES_BEATS?=./vendor/github.com/elastic/beats
+ES_BEATS=./vendor/github.com/elastic/beats
 #GOPACKAGES=$(shell glide novendor)
 GOPACKAGES=$(shell go list ${BEAT_DIR}/... | grep -v /vendor/)
 PREFIX?=.
@@ -51,7 +51,7 @@ before-build:
 .PHONY: update-deps
 update-deps:
 	#glide update  --no-recursive
-	glide update  --no-recursive
+	glide update
 
 # Collects all dependencies and then calls update
 .PHONY: collect

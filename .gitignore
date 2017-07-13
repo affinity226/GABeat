@@ -1,7 +1,6 @@
 /.idea
 /build
 
-/vendor
 # Binaries for programs and plugins
 *.exe
 *.dll
@@ -16,7 +15,6 @@
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
-/vendor/
 .DS_Store
 /gabeat
 /gabeat.test

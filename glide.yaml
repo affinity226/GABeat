@@ -1,4 +1,4 @@
-package: github.com/affinity226/GABeat
+package: github.com/affinity226/gabeat
 import:
 - package: github.com/elastic/beats
   version: v5.2.1

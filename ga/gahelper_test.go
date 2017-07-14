@@ -4,7 +4,7 @@ package ga
 
 import (
 	"errors"
-	cfg "github.com/affinity226/GABeat/config"
+	cfg "github.com/affinity226/gabeat/config"
 	"github.com/stretchr/testify/assert"
 	analytics "google.golang.org/api/analytics/v3"
 	googleapi "google.golang.org/api/googleapi"

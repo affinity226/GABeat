@@ -1,5 +1,4 @@
 BEATNAME=gabeat
-#BEAT_DIR=github.com/GeneralElectric/GABeat
 BEAT_DIR=github.com/affinity226/gabeat
 SYSTEM_TESTS=false
 TEST_ENVIRONMENT=false

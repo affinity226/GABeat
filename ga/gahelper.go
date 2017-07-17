@@ -261,7 +261,15 @@ func parseGAResponseForCharge(gaData *analytics.GaData, dimensionCount, metricCo
 	for _, row := range gaData.Rows {
 		data := make(map[string]interface{})
 		for i, columnHeader := range gaData.ColumnHeaders {
-			data[format(columnHeader.Name)] = row[i]
+			if i < dimensionCount {
+				data[format(columnHeader.Name)] = row[i]
+			} else {
+				if val, err := strconv.ParseFloat(row[i], 64); err == nil {
+					data[format(columnHeader.Name)] = val
+				} else {
+					data[format(columnHeader.Name)] = row[i]
+				}
+			}
 		}
 		gaDataPoints = append(gaDataPoints, GABeatDataPoint{0, "", "", data})
 	}

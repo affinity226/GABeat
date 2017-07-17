@@ -28,7 +28,7 @@ gabeat:
     document_type: "charge_type"
     project_type: "datasoda"
     tags: ["data-X", "log-tier"]
-    schedule: "0 41 17 17 * * " # every 17 day, 17 hour, 41 min, 0 sec
+    schedule: "0 53 17 17 * * " # every 17 day, 17 hour, 41 min, 0 sec
    - 
     # Documentation for the Google Analytics Realtime API:
     # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
@@ -53,7 +53,7 @@ gabeat:
     document_type: "charge_type"
     project_type: "datasoda"
     tags: ["data-X", "log-tier"]
-    schedule: "@every 1h"
+    schedule: "@every 1m"
    #- 
    # # Documentation for the Google Analytics Realtime API:
    # # https://developers.google.com/analytics/devguides/reporting/realtime/v3/

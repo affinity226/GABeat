@@ -16,6 +16,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var errorResult = GABeatDataPoint{-1, "error", "error", nil}
@@ -226,7 +227,24 @@ func getGADataForCharge(gaIds, gaMetrics, gaDimensions, gaStarttime, gaEndtime s
 
 	dataGAService := analytics.NewDataGaService(analyticsService)
 
-	dataGAGetCall := dataGAService.Get(gaIds, gaStarttime, gaEndtime, gaMetrics)
+	re := regexp.MustCompile("(?P<month>[0-9]+)monthsAgo")
+	spKey := re.SubexpNames()
+	spVal := re.FindStringSubmatch(gaStarttime)
+	mapVal := make(map[string]string)
+	for i, value := range spVal {
+		mapVal[spKey[i]] = value
+	}
+	var dataGAGetCall *analytics.DataGaGetCall
+	if val, ok := mapVal["month"]; ok {
+		if months, err := strconv.Atoi(val); err == nil {
+			now := time.Now().AddDate(0, months*-1, 0)
+			dataGAGetCall = dataGAService.Get(gaIds, now.Format("2006-01-02"), gaEndtime, gaMetrics)
+		} else {
+			dataGAGetCall = dataGAService.Get(gaIds, gaStarttime, gaEndtime, gaMetrics)
+		}
+	} else {
+		dataGAGetCall = dataGAService.Get(gaIds, gaStarttime, gaEndtime, gaMetrics)
+	}
 
 	gaData, gaDataErr := dataGAGetCall.Dimensions(gaDimensions).Do()
 

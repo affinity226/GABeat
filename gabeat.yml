@@ -1,6 +1,6 @@
 gabeat:
   # Defines how often an event is sent to the output
-  period: 5s 
+  #period: 5s 
 
   googleanalytics:
    - 
@@ -14,33 +14,63 @@ gabeat:
     # Docs on available metrics and dimensions can be found here:
     # https://developers.google.com/analytics/devguides/reporting/realtime/dimsmets/
     #ga_metrics: "ga:users,ga:screenviews,ga:1dayUsers"
-    #ga_metrics: "ga:users,ga:screenviews"
-    #ga_metrics: "ga:1dayUsers,ga:newUsers,ga:percentNewSessions"
-    #ga_metrics: "ga:30dayUsers,ga:newUsers"
-    ga_metrics: "ga:users,ga:newUsers"
-    ga_dimensions: "ga:date,ga:userType"
-    #ga_dimensions: "ga:date"
+    ga_metrics: "ga:users,ga:screenviews"
+    #ga_metrics: "ga:30dayUsers"
+    #ga_metrics: "ga:1dayUsers"
+    ga_dimensions: "ga:date"
     #realtime or gaservice
     ga_servicetype: "gaservice"
     #start,endtime will be used only gaservice type
-    ga_starttime: "2daysAgo"
+    #ga_starttime: "2daysAgo"
+    ga_starttime: "yesterday"
+    #ga_starttime: "1monthsAgo"
     ga_endtime: "yesterday"
     document_type: "charge_type"
-  # - 
-  #  # Documentation for the Google Analytics Realtime API:
-  #  # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
-  #  # Documentation explaining OAuth2 Service Account flow and how code works
-  #  # https://developers.google.com/accounts/docs/OAuth2ServiceAccount
-  #  google_credentials_file: /Users/1100473/src/github.com/affinity226/GABeat/test3.json
-  #  # replace ga_ids with your metric ID from GA
-  #  ga_ids: "ga:141191979"
-  #  # Docs on available metrics and dimensions can be found here:
-  #  # https://developers.google.com/analytics/devguides/reporting/realtime/dimsmets/
-  #  ga_metrics: "rt:pageviews"
-  #  ga_dimensions: "rt:pageTitle"
-  #  #realtime or gaservice
-  #  ga_servicetype: "realtime"
-  #  document_type: "realtime_type"
+    project_type: "datasoda"
+    tags: ["data-X", "log-tier"]
+    schedule: "0 41 17 17 * * " # every 17 day, 17 hour, 41 min, 0 sec
+   - 
+    # Documentation for the Google Analytics Realtime API:
+    # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
+    # Documentation explaining OAuth2 Service Account flow and how code works
+    # https://developers.google.com/accounts/docs/OAuth2ServiceAccount
+    google_credentials_file: /Users/1100473/src/github.com/affinity226/gabeat/test3.json
+    # replace ga_ids with your metric ID from GA
+    ga_ids: "ga:141191979"
+    # Docs on available metrics and dimensions can be found here:
+    # https://developers.google.com/analytics/devguides/reporting/realtime/dimsmets/
+    #ga_metrics: "ga:users,ga:screenviews,ga:1dayUsers"
+    ga_metrics: "ga:users,ga:screenviews"
+    #ga_metrics: "ga:30dayUsers"
+    #ga_metrics: "ga:1dayUsers"
+    ga_dimensions: "ga:date"
+    #realtime or gaservice
+    ga_servicetype: "gaservice"
+    #start,endtime will be used only gaservice type
+    #ga_starttime: "2daysAgo"
+    ga_starttime: "1monthsAgo"
+    ga_endtime: "yesterday"
+    document_type: "charge_type"
+    project_type: "datasoda"
+    tags: ["data-X", "log-tier"]
+    schedule: "@every 1h"
+   #- 
+   # # Documentation for the Google Analytics Realtime API:
+   # # https://developers.google.com/analytics/devguides/reporting/realtime/v3/
+   # # Documentation explaining OAuth2 Service Account flow and how code works
+   # # https://developers.google.com/accounts/docs/OAuth2ServiceAccount
+   # google_credentials_file: /Users/1100473/src/github.com/affinity226/GABeat/test3.json
+   # # replace ga_ids with your metric ID from GA
+   # ga_ids: "ga:141191979"
+   # # Docs on available metrics and dimensions can be found here:
+   # # https://developers.google.com/analytics/devguides/reporting/realtime/dimsmets/
+   # ga_metrics: "rt:pageviews"
+   # ga_dimensions: "rt:pageTitle"
+   # #realtime or gaservice
+   # ga_servicetype: "realtime"
+   # document_type: "realtime_type"
+   # tags: ["data-X", "log-tier"]
+   # schedule: "@every 10s"
     
 
 #================================ General =====================================
@@ -51,12 +81,12 @@ gabeat:
 
 # The tags of the shipper are included in their own field with each
 # transaction published.
-tags: ["service-X", "web-tier"]
+#tags: ["service-X", "web-tier"]
 
 # Optional fields that you can specify to add additional information to the
 # output.
-fields:
-  type: prod
+#fields:
+#  type: prod
 fields_under_root: true
 
 #================================ Outputs =====================================

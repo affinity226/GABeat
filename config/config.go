@@ -18,14 +18,16 @@ var DefaultConfig = Config{
 }
 
 type GoogleAnalyticsConfig struct {
-	GoogleCredentialsFilePath string `config:"google_credentials_file"`
-	GoogleAnalyticsIDs        string `config:"ga_ids"`
-	GoogleAnalyticsMetrics    string `config:"ga_metrics"`
-	GoogleAnalyticsDimensions string `config:"ga_dimensions"`
-	GoogleAnalyticsStarttime  string `config:"ga_starttime"`
-	GoogleAnalyticsEndtime    string `config:"ga_endtime"`
-	GoogleAnalyticsType       string `config:"ga_servicetype"`
-	DocumentType              string `config:"document_type"`
+	GoogleCredentialsFilePath string   `config:"google_credentials_file"`
+	GoogleAnalyticsIDs        string   `config:"ga_ids"`
+	GoogleAnalyticsMetrics    string   `config:"ga_metrics"`
+	GoogleAnalyticsDimensions string   `config:"ga_dimensions"`
+	GoogleAnalyticsStarttime  string   `config:"ga_starttime"`
+	GoogleAnalyticsEndtime    string   `config:"ga_endtime"`
+	GoogleAnalyticsType       string   `config:"ga_servicetype"`
+	DocumentType              string   `config:"document_type"`
+	Tags                      []string `config:"tags"`
+	Schedule                  string   `config:"schedule"`
 }
 
 func (gaConfig GoogleAnalyticsConfig) String() string {

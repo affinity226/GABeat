@@ -62,7 +62,8 @@ func runFunctionally(bt *Gabeat, b *beat.Beat, dataFunc gaDataRetriever) error {
 func beatOnce(client publisher.Client, beatName string, gaConfig config.GoogleAnalyticsConfig, dataFunc gaDataRetriever) {
 	GAData, err := dataFunc(gaConfig)
 	if err == nil {
-		publishToElastic(client, beatName, GAData)
+		//publishToElastic(client, beatName, GAData)
+		publishToElasticForCharge(client, gaConfig.DocumentType, GAData)
 	} else {
 		logp.Err("gadata was null, not publishing: %v", err)
 	}
@@ -81,23 +82,9 @@ func makeEvent(beatType string, GAData []ga.GABeatDataPoint) map[string]interfac
 	}
 	return event
 }
-func makeEventForCharge(beatType string, GAData []ga.GABeatDataPoint) map[string]interface{} {
-	event := common.MapStr{
-		"@timestamp": common.Time(time.Now()),
-		"type":       beatType,
-		"count":      1, //The number of transactions that this event represents
-		//"data":       GAData,
-	}
-	for _, gaDataPoint := range GAData {
-		gaDataName := gaDataPoint.DimensionName + "_" + gaDataPoint.MetricName
-		event.Put(gaDataName, gaDataPoint.Value)
-	}
-	return event
-}
 
 func publishToElastic(client publisher.Client, beatType string, GAData []ga.GABeatDataPoint) {
-	//event := makeEvent(beatType, GAData)
-	event := makeEventForCharge(beatType, GAData)
+	event := makeEvent(beatType, GAData)
 	succeeded := client.PublishEvent(event)
 	if !succeeded {
 		logp.Err("Publisher couldn't publish event to Elastic")
@@ -107,4 +94,26 @@ func publishToElastic(client publisher.Client, beatType string, GAData []ga.GABe
 func (bt *Gabeat) Stop() {
 	bt.client.Close()
 	close(bt.done)
+}
+
+func publishToElasticForCharge(client publisher.Client, beatType string, GAData []ga.GABeatDataPoint) {
+	event := makeEventForCharge(beatType, GAData)
+	succeeded := client.PublishEvent(event)
+	if !succeeded {
+		logp.Err("Publisher couldn't publish event to Elastic")
+	}
+}
+
+func makeEventForCharge(beatType string, GAData []ga.GABeatDataPoint) map[string]interface{} {
+	event := common.MapStr{
+		"@timestamp": common.Time(time.Now()),
+		"type":       beatType,
+		"count":      1, //The number of transactions that this event represents
+		"data":       GAData,
+	}
+	for _, gaDataPoint := range GAData {
+		gaDataName := gaDataPoint.DimensionName + "_" + gaDataPoint.MetricName
+		event.Put(gaDataName, gaDataPoint.Value)
+	}
+	return event
 }

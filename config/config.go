@@ -25,18 +25,10 @@ type GoogleAnalyticsConfig struct {
 	GoogleAnalyticsStarttime  string `config:"ga_starttime"`
 	GoogleAnalyticsEndtime    string `config:"ga_endtime"`
 	GoogleAnalyticsType       string `config:"ga_servicetype"`
+	DocumentType              string `config:"document_type"`
 }
 
 func (gaConfig GoogleAnalyticsConfig) String() string {
-	/*fmt.Printf("GoogleCredentialsFilePath: %s, GoogleAnalyticsIDs: %s, GoogleAnalyticsMetrics: %s, GoogleAnalyticsDimensions %s Start: %s, End: %s, Type: %s\n",
-	gaConfig.GoogleCredentialsFilePath,
-	gaConfig.GoogleAnalyticsIDs,
-	gaConfig.GoogleAnalyticsMetrics,
-	gaConfig.GoogleAnalyticsDimensions,
-	gaConfig.GoogleAnalyticsStarttime,
-	gaConfig.GoogleAnalyticsEndtime,
-	gaConfig.GoogleAnalyticsType)
-	-Charge- */
 	return fmt.Sprintf("GoogleCredentialsFilePath: %s, GoogleAnalyticsIDs: %s, GoogleAnalyticsMetrics: %s, GoogleAnalyticsDimensions %s",
 		gaConfig.GoogleCredentialsFilePath,
 		gaConfig.GoogleAnalyticsIDs,

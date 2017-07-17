@@ -18,9 +18,9 @@ import (
 	"strings"
 )
 
-var errorResult = GABeatDataPoint{-1, "error", "error"}
+var errorResult = GABeatDataPoint{-1, "error", "error", nil}
 var errorResults = []GABeatDataPoint{errorResult}
-var emptyResult = GABeatDataPoint{0, "empty", "empty"}
+var emptyResult = GABeatDataPoint{0, "empty", "empty", nil}
 var emptyResults = []GABeatDataPoint{emptyResult}
 var alphanumericPlusUnderscoreRegex, _ = regexp.Compile("[_0-9A-Za-z]")
 var whitespaceRegex, _ = regexp.Compile("[[:space:]]")
@@ -31,6 +31,7 @@ type GABeatDataPoint struct {
 	Value         int
 	DimensionName string
 	MetricName    string
+	Data          map[string]interface{}
 }
 
 type gaDataRetriever func(gaIds string, gaMetrics string, gaDimensions string) (gaData *analytics.RealtimeData, err error)
@@ -151,7 +152,8 @@ func parseGAResponse(gaData *analytics.RealtimeData) (GAData []GABeatDataPoint, 
 		}
 		gaDataPoint := GABeatDataPoint{dataPoint,
 			format(dimensionName),
-			format(metricNameHeader)}
+			format(metricNameHeader),
+			nil}
 		gaDataPoints = append(gaDataPoints, gaDataPoint)
 	}
 	return gaDataPoints, nil
@@ -197,6 +199,7 @@ func debugGAResponse(gaData *analytics.RealtimeData) {
 }
 
 func debugGAResponseForCharge(gaData *analytics.GaData) {
+	logp.Debug(logSelector, "total Result : %v ", gaData.TotalsForAllResults)
 	if logp.IsDebug(logSelector) {
 		for i, columnHeader := range gaData.ColumnHeaders {
 			logp.Debug(logSelector, "column header [%d]: %s %s %s ", i,
@@ -238,20 +241,32 @@ func parseGAResponseForCharge(gaData *analytics.GaData, dimensionCount, metricCo
 	gaDataPoints := []GABeatDataPoint{}
 
 	for _, row := range gaData.Rows {
-		var dimensionNames []string = row[0:dimensionCount]
-		dimensionName := strings.Join(dimensionNames, "_")
-		for idx := 0; idx < metricCount; idx++ {
-			var metricValue string = row[dimensionCount+idx]
-			var metricNameHeader string = gaData.ColumnHeaders[dimensionCount+idx].Name
-			dataPoint, err := strconv.Atoi(metricValue)
-			if err != nil {
-				return errorResults, fmt.Errorf("Error converting string to int: %s, %v", metricValue, err)
-			}
-			gaDataPoint := GABeatDataPoint{dataPoint,
-				format(dimensionName),
-				format(metricNameHeader)}
-			gaDataPoints = append(gaDataPoints, gaDataPoint)
+		data := make(map[string]interface{})
+		for i, columnHeader := range gaData.ColumnHeaders {
+			data[format(columnHeader.Name)] = row[i]
 		}
+		gaDataPoints = append(gaDataPoints, GABeatDataPoint{0, "", "", data})
 	}
+	/*
+		for _, row := range gaData.Rows {
+			var dimensionNames []string = row[0:dimensionCount]
+			dimensionName := strings.Join(dimensionNames, "_")
+			data := make(map[string]interface{})
+			for idx := 0; idx < metricCount; idx++ {
+				var metricValue string = row[dimensionCount+idx]
+				var metricNameHeader string = gaData.ColumnHeaders[dimensionCount+idx].Name
+				//dataPoint, err := strconv.Atoi(metricValue)
+				dataPoint, err := strconv.ParseFloat(metricValue, 64)
+				if err != nil {
+					return errorResults, fmt.Errorf("Error converting string to int: %s, %v", metricValue, err)
+				}
+				gaDataPoint := GABeatDataPoint{int(dataPoint + 0.5),
+					format(dimensionName),
+					format(metricNameHeader),
+					data}
+				gaDataPoints = append(gaDataPoints, gaDataPoint)
+			}
+		}
+	*/
 	return gaDataPoints, nil
 }

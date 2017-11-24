@@ -67,6 +67,8 @@ func getGAReportData(gaConfig config.GoogleAnalyticsConfig, gaDataRetrieverFunc 
 		gaData, gaDataErr := getGADataForCharge(gaConfig.GoogleAnalyticsIDs,
 			gaConfig.GoogleAnalyticsMetrics,
 			gaConfig.GoogleAnalyticsDimensions,
+			gaConfig.GoogleAnalyticsFilters,
+			gaConfig.GoogleAnalyticsSegment,
 			gaConfig.GoogleAnalyticsStarttime,
 			gaConfig.GoogleAnalyticsEndtime,
 		)
@@ -214,7 +216,7 @@ func debugGAResponseForCharge(gaData *analytics.GaData) {
 	}
 }
 
-func getGADataForCharge(gaIds, gaMetrics, gaDimensions, gaStarttime, gaEndtime string) (gaData *analytics.GaData, err error) {
+func getGADataForCharge(gaIds, gaMetrics, gaDimensions, gaFilters, gaSegment, gaStarttime, gaEndtime string) (gaData *analytics.GaData, err error) {
 	oauthHttpClient, err := google.DefaultClient(oauth2.NoContext, analytics.AnalyticsReadonlyScope)
 	if err != nil {
 		return nil, fmt.Errorf("Error creating auth context: %v", err)
@@ -246,6 +248,13 @@ func getGADataForCharge(gaIds, gaMetrics, gaDimensions, gaStarttime, gaEndtime s
 		dataGAGetCall = dataGAService.Get(gaIds, gaStarttime, gaEndtime, gaMetrics)
 	}
 
+	if len(gaFilters) > 0 {
+		dataGAGetCall = dataGAGetCall.Filters(gaFilters)
+	}
+	if len(gaSegment) > 0 {
+		dataGAGetCall = dataGAGetCall.Segment(gaSegment)
+	}
+	fmt.Println(dataGAGetCall)
 	gaData, gaDataErr := dataGAGetCall.Dimensions(gaDimensions).Do()
 
 	return gaData, gaDataErr

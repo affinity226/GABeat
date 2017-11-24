@@ -22,6 +22,8 @@ type GoogleAnalyticsConfig struct {
 	GoogleAnalyticsIDs        string   `config:"ga_ids"`
 	GoogleAnalyticsMetrics    string   `config:"ga_metrics"`
 	GoogleAnalyticsDimensions string   `config:"ga_dimensions"`
+	GoogleAnalyticsFilters    string   `config:"ga_filters"`
+	GoogleAnalyticsSegment    string   `config:"ga_segment"`
 	GoogleAnalyticsStarttime  string   `config:"ga_starttime"`
 	GoogleAnalyticsEndtime    string   `config:"ga_endtime"`
 	GoogleAnalyticsType       string   `config:"ga_servicetype"`
